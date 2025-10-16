@@ -9,9 +9,9 @@ func LoginRepository(req Users) (Users, error) {
 	return req, nil
 }
 
-func RegisterRepository(req Users) (Users, error) {
+func RegisterRepository(req Users) error {
 	if err := configs.DB.Create(&req).Error; err != nil {
-		return Users{}, err
+		return err
 	}
-	return req, nil
+	return nil
 }

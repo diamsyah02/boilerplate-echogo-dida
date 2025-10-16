@@ -3,17 +3,20 @@ package main
 import (
 	"boilerplate-echogo-dida/configs"
 	"boilerplate-echogo-dida/routes"
-	"log"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Gagal memuat file .env: %v", err)
+		log.Error().
+			Str("function", "main starting app").
+			Err(err).
+			Msg("Gagal memuat file .env")
 	}
 	configs.Connect()
 	e := echo.New()

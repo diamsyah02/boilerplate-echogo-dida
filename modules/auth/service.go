@@ -21,15 +21,15 @@ func LoginService(req Users) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
 
-func RegisterService(req Users) (Users, error) {
+func RegisterService(req Users) error {
 	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return Users{}, err
+		return err
 	}
 	req.Password = string(password)
-	result, err := RegisterRepository(req)
+	err = RegisterRepository(req)
 	if err != nil {
-		return Users{}, err
+		return err
 	}
-	return result, nil
+	return nil
 }
