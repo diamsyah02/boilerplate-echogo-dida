@@ -2,9 +2,9 @@
 Boilerplate Echo Golang
 
 # Tech Stack
+- Golang
 - Echo
 - GORM
-- Golang
 - JWT
 - Zerolog
 
