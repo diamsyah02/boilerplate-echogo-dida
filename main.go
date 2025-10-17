@@ -2,7 +2,7 @@ package main
 
 import (
 	"boilerplate-echogo-dida/configs"
-	"boilerplate-echogo-dida/routes"
+	v1 "boilerplate-echogo-dida/routes/v1"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -26,7 +26,7 @@ func main() {
 	e.Use(middleware.CORSWithConfig(configs.CORSConfig))
 	e.Use(middleware.RateLimiterWithConfig(configs.RateLimiterConfig))
 	// Routing
-	routes.InitRoutes(e)
+	v1.InitRoutes(e)
 
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }

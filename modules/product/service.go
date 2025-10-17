@@ -1,15 +1,31 @@
 package product
 
-func GetProductsService() ([]Products, error) {
-	result, err := GetProductsRepository()
+type ProductService interface {
+	GetProductsService() ([]Products, error)
+	GetProductByIdService(id int) ([]Products, error)
+	CreateProductService(product Products) error
+	UpdateProductService(product Products) error
+	DeleteProductService(id int) error
+}
+
+type productService struct {
+	repo ProductRepository
+}
+
+func NewProductService(repo ProductRepository) ProductService {
+	return &productService{repo}
+}
+
+func (s *productService) GetProductsService() ([]Products, error) {
+	result, err := s.repo.GetProductsRepository()
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func GetProductByIdService(id int) ([]Products, error) {
-	result, found, err := GetProductByIdRepository(id)
+func (s *productService) GetProductByIdService(id int) ([]Products, error) {
+	result, found, err := s.repo.GetProductByIdRepository(id)
 	if err != nil {
 		return []Products{}, err
 	}
@@ -19,24 +35,24 @@ func GetProductByIdService(id int) ([]Products, error) {
 	return []Products{result}, nil
 }
 
-func CreateProductService(product Products) error {
-	err := CreateProductRepository(product)
+func (s *productService) CreateProductService(product Products) error {
+	err := s.repo.CreateProductRepository(product)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateProductService(product Products) error {
-	err := UpdateProductRepository(product)
+func (s *productService) UpdateProductService(product Products) error {
+	err := s.repo.UpdateProductRepository(product)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DeleteProductService(id int) error {
-	err := DeleteProductRepository(id)
+func (s *productService) DeleteProductService(id int) error {
+	err := s.repo.DeleteProductRepository(id)
 	if err != nil {
 		return err
 	}

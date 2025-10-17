@@ -1,15 +1,34 @@
 package auth
 
-import "boilerplate-echogo-dida/configs"
+import (
+	"boilerplate-echogo-dida/configs"
+	"errors"
 
-func LoginRepository(req Users) (Users, error) {
-	if err := configs.DB.Where("username = ?", req.Username).First(&req).Error; err != nil {
-		return Users{}, err
-	}
-	return req, nil
+	"gorm.io/gorm"
+)
+
+type AuthRepository interface {
+	Login(req Users) (Users, bool, error)
+	Register(req Users) error
 }
 
-func RegisterRepository(req Users) error {
+type authRepository struct{}
+
+func NewAuthRepository() AuthRepository {
+	return &authRepository{}
+}
+
+func (s *authRepository) Login(req Users) (Users, bool, error) {
+	if err := configs.DB.Where("username = ?", req.Username).First(&req).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return Users{}, false, nil
+		}
+		return Users{}, false, err
+	}
+	return req, true, nil
+}
+
+func (s *authRepository) Register(req Users) error {
 	if err := configs.DB.Create(&req).Error; err != nil {
 		return err
 	}

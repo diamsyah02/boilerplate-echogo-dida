@@ -1,4 +1,4 @@
-# boilerplate-echogo-dida
+# Boilerplate-EchoGo-Dida
 Boilerplate Echo Golang
 
 # Tech Stack

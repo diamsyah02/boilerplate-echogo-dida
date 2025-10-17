@@ -9,8 +9,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func LoginHandler(c echo.Context) error {
-	logger := log.With().Str("function", "LoginHandler").Logger()
+type AuthHandler struct {
+	service AuthService
+}
+
+func NewAuthHandler(s AuthService) AuthHandler {
+	return AuthHandler{s}
+}
+
+func (h *AuthHandler) Login(c echo.Context) error {
+	logger := log.With().Str("function", "Login").Logger()
 
 	var req Users
 	if err := c.Bind(&req); err != nil {
@@ -24,12 +32,17 @@ func LoginHandler(c echo.Context) error {
 			Msg("Username and password is required")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Username and password is required", nil))
 	}
-	token, err := LoginService(req)
+	token, err := h.service.Login(req)
 	if err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to login")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Internal server error", nil))
+	}
+	if token == "" {
+		logger.Warn().
+			Msg("Failed to login, username or password is wrong")
+		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Username or password is wrong", nil))
 	}
 	data := map[string]interface{}{
 		"username": req.Username,
@@ -38,8 +51,8 @@ func LoginHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Login success", data))
 }
 
-func RegisterHandler(c echo.Context) error {
-	logger := log.With().Str("function", "RegisterHandler").Logger()
+func (h *AuthHandler) Register(c echo.Context) error {
+	logger := log.With().Str("function", "Register").Logger()
 
 	var req Users
 	if err := c.Bind(&req); err != nil {
@@ -53,7 +66,7 @@ func RegisterHandler(c echo.Context) error {
 			Msg("Username and password is required")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Username and password is required", nil))
 	}
-	err := RegisterService(req)
+	err := h.service.Register(req)
 	if err != nil {
 		logger.Error().
 			Err(err).

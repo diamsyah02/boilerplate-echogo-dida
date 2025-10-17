@@ -10,10 +10,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func GetProductsHandler(c echo.Context) error {
+type ProductHandler struct {
+	service ProductService
+}
+
+func NewProductHandler(s ProductService) ProductHandler {
+	return ProductHandler{s}
+}
+
+func (h *ProductHandler) GetProductsHandler(c echo.Context) error {
 	logger := log.With().Str("function", "GetProductsHandler").Logger()
 
-	products, err := GetProductsService()
+	products, err := h.service.GetProductsService()
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -23,7 +31,7 @@ func GetProductsHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get products success", products))
 }
 
-func GetProductByIdHandler(c echo.Context) error {
+func (h *ProductHandler) GetProductByIdHandler(c echo.Context) error {
 	logger := log.With().Str("function", "GetProductByIdHandler").Logger()
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -34,7 +42,7 @@ func GetProductByIdHandler(c echo.Context) error {
 			Msg("Invalid product ID param")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Invalid product ID", nil))
 	}
-	result, err := GetProductByIdService(id)
+	result, err := h.service.GetProductByIdService(id)
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -44,7 +52,7 @@ func GetProductByIdHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get product by id success", result))
 }
 
-func CreateProductHandler(c echo.Context) error {
+func (h *ProductHandler) CreateProductHandler(c echo.Context) error {
 	logger := log.With().Str("function", "CreateProductHandler").Logger()
 
 	product := Products{}
@@ -54,7 +62,7 @@ func CreateProductHandler(c echo.Context) error {
 			Msg("Failed to bind product")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Create product failed", nil))
 	}
-	if err := CreateProductService(product); err != nil {
+	if err := h.service.CreateProductService(product); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to create product")
@@ -63,7 +71,7 @@ func CreateProductHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Create product success", nil))
 }
 
-func UpdateProductHandler(c echo.Context) error {
+func (h *ProductHandler) UpdateProductHandler(c echo.Context) error {
 	logger := log.With().Str("function", "UpdateProductHandler").Logger()
 
 	product := Products{}
@@ -73,7 +81,7 @@ func UpdateProductHandler(c echo.Context) error {
 			Msg("Failed to bind product")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Update product failed", nil))
 	}
-	if err := UpdateProductService(product); err != nil {
+	if err := h.service.UpdateProductService(product); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to update product")
@@ -82,7 +90,7 @@ func UpdateProductHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Update product success", nil))
 }
 
-func DeleteProductHandler(c echo.Context) error {
+func (h *ProductHandler) DeleteProductHandler(c echo.Context) error {
 	logger := log.With().Str("function", "DeleteProductHandler").Logger()
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -94,7 +102,7 @@ func DeleteProductHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Invalid product ID", nil))
 	}
 
-	if err := DeleteProductService(id); err != nil {
+	if err := h.service.DeleteProductService(id); err != nil {
 		logger.Error().
 			Int("product_id", id).
 			Err(err).

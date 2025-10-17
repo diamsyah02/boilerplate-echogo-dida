@@ -8,10 +8,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func GetUsersHandler(c echo.Context) error {
+type UserHandler struct {
+	service UserService
+}
+
+func NewUserHandler(service UserService) UserHandler {
+	return UserHandler{service}
+}
+
+func (h *UserHandler) GetUsersHandler(c echo.Context) error {
 	logger := log.With().Str("function", "GetUsersHandler").Logger()
 
-	users, err := GetUsersService()
+	users, err := h.service.GetUsersService()
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -21,7 +29,7 @@ func GetUsersHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get users success", users))
 }
 
-func UpdateUserHandler(c echo.Context) error {
+func (h *UserHandler) UpdateUserHandler(c echo.Context) error {
 	logger := log.With().Str("function", "UpdateUserHandler").Logger()
 
 	user := Users{}
@@ -31,7 +39,7 @@ func UpdateUserHandler(c echo.Context) error {
 			Msg("Failed to bind user")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Update user failed", nil))
 	}
-	if err := UpdateUserService(user); err != nil {
+	if err := h.service.UpdateUserService(user); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to update user")
