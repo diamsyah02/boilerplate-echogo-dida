@@ -1,6 +1,11 @@
 package product
 
-import "boilerplate-echogo-dida/configs"
+import (
+	"boilerplate-echogo-dida/configs"
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 func GetProductsRepository() ([]Products, error) {
 	var products []Products
@@ -10,12 +15,15 @@ func GetProductsRepository() ([]Products, error) {
 	return products, nil
 }
 
-func GetProductByIdRepository(id int) (Products, error) {
+func GetProductByIdRepository(id int) (Products, bool, error) {
 	var product Products
 	if err := configs.DB.First(&product, id).Error; err != nil {
-		return Products{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return Products{}, false, nil
+		}
+		return Products{}, false, err
 	}
-	return product, nil
+	return product, true, nil
 }
 
 func CreateProductRepository(product Products) error {

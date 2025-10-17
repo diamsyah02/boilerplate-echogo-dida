@@ -2,6 +2,7 @@ package auth
 
 import (
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +18,7 @@ func LoginService(req Users) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": result.Username,
+		"exp":      time.Now().Add(time.Hour * 1).Unix(),
 	})
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }

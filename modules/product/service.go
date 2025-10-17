@@ -8,12 +8,15 @@ func GetProductsService() ([]Products, error) {
 	return result, nil
 }
 
-func GetProductByIdService(id int) (Products, error) {
-	result, err := GetProductByIdRepository(id)
+func GetProductByIdService(id int) ([]Products, error) {
+	result, found, err := GetProductByIdRepository(id)
 	if err != nil {
-		return Products{}, err
+		return []Products{}, err
 	}
-	return result, nil
+	if !found {
+		return []Products{}, nil
+	}
+	return []Products{result}, nil
 }
 
 func CreateProductService(product Products) error {

@@ -9,10 +9,11 @@ import (
 )
 
 func GetUsersHandler(c echo.Context) error {
+	logger := log.With().Str("function", "GetUsersHandler").Logger()
+
 	users, err := GetUsersService()
 	if err != nil {
-		log.Error().
-			Str("function", "GetUsersHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to get users")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Get users failed", nil))
@@ -21,17 +22,17 @@ func GetUsersHandler(c echo.Context) error {
 }
 
 func UpdateUserHandler(c echo.Context) error {
+	logger := log.With().Str("function", "UpdateUserHandler").Logger()
+
 	user := Users{}
 	if err := c.Bind(&user); err != nil {
-		log.Error().
-			Str("function", "UpdateUserHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to bind user")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Update user failed", nil))
 	}
 	if err := UpdateUserService(user); err != nil {
-		log.Error().
-			Str("function", "UpdateUserHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to update user")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Update user failed", nil))

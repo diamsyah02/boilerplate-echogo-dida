@@ -10,24 +10,23 @@ import (
 )
 
 func LoginHandler(c echo.Context) error {
+	logger := log.With().Str("function", "LoginHandler").Logger()
+
 	var req Users
 	if err := c.Bind(&req); err != nil {
-		log.Error().
-			Str("function", "LoginHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to bind user")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Cannot read request body", nil))
 	}
 	if req.Username == "" || req.Password == "" {
-		log.Error().
-			Str("function", "LoginHandler").
+		logger.Error().
 			Msg("Username and password is required")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Username and password is required", nil))
 	}
 	token, err := LoginService(req)
 	if err != nil {
-		log.Error().
-			Str("function", "LoginHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to login")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Internal server error", nil))
@@ -40,24 +39,23 @@ func LoginHandler(c echo.Context) error {
 }
 
 func RegisterHandler(c echo.Context) error {
+	logger := log.With().Str("function", "RegisterHandler").Logger()
+
 	var req Users
 	if err := c.Bind(&req); err != nil {
-		log.Error().
-			Str("function", "RegisterHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to bind user")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Cannot read request body", nil))
 	}
 	if req.Username == "" || req.Password == "" {
-		log.Error().
-			Str("function", "RegisterHandler").
+		logger.Error().
 			Msg("Username and password is required")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Username and password is required", nil))
 	}
 	err := RegisterService(req)
 	if err != nil {
-		log.Error().
-			Str("function", "RegisterHandler").
+		logger.Error().
 			Err(err).
 			Msg("Failed to register")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Internal server error", nil))
