@@ -3,6 +3,7 @@ package main
 import (
 	"boilerplate-echogo-dida/configs"
 	"boilerplate-echogo-dida/routes"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -27,5 +28,5 @@ func main() {
 	// Routing
 	routes.InitRoutes(e)
 
-	e.Logger.Fatal(e.Start(":6000"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 }
