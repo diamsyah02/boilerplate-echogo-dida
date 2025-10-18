@@ -12,10 +12,11 @@ func RouteProduct(e *echo.Group) {
 	productService := product.NewProductService(productRepo)
 	productHandler := product.NewProductHandler(productService)
 
-	e.Use(configs.EchoJWTConfig)
-	e.GET("", productHandler.GetProductsHandler)
-	e.GET("/:id", productHandler.GetProductByIdHandler)
-	e.POST("", productHandler.CreateProductHandler)
-	e.PUT("", productHandler.UpdateProductHandler)
-	e.DELETE("/:id", productHandler.DeleteProductHandler)
+	p := e.Group("/products")
+	p.Use(configs.EchoJWTConfig)
+	p.GET("", productHandler.GetProducts)
+	p.GET("/:id", productHandler.GetProductById)
+	p.POST("", productHandler.CreateProduct)
+	p.PUT("", productHandler.UpdateProduct)
+	p.DELETE("/:id", productHandler.DeleteProduct)
 }

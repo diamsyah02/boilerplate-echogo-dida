@@ -12,15 +12,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockService struct {
+type mockHandler struct {
 	loginFunc    func(user auth.Users) (string, error)
 	registerFunc func(user auth.Users) error
 }
 
-func (m *mockService) Login(user auth.Users) (string, error) {
+func (m *mockHandler) Login(user auth.Users) (string, error) {
 	return m.loginFunc(user)
 }
-func (m *mockService) Register(user auth.Users) error {
+func (m *mockHandler) Register(user auth.Users) error {
 	return m.registerFunc(user)
 }
 
@@ -31,7 +31,7 @@ func TestLogin_Success(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	mock := &mockService{
+	mock := &mockHandler{
 		loginFunc: func(user auth.Users) (string, error) {
 			return "TOKEN123", nil
 		},
@@ -52,7 +52,7 @@ func TestLoginHandler_EmptyFields(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := auth.NewAuthHandler(&mockService{})
+	h := auth.NewAuthHandler(&mockHandler{})
 	err := h.Login(c)
 
 	assert.NoError(t, err)
@@ -67,7 +67,7 @@ func TestRegister_Success(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	mock := &mockService{
+	mock := &mockHandler{
 		registerFunc: func(user auth.Users) error {
 			return nil
 		},
@@ -88,7 +88,7 @@ func TestRegister_EmptyFields(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	h := auth.NewAuthHandler(&mockService{})
+	h := auth.NewAuthHandler(&mockHandler{})
 	err := h.Register(c)
 
 	assert.NoError(t, err)

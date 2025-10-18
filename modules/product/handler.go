@@ -18,10 +18,10 @@ func NewProductHandler(s ProductService) ProductHandler {
 	return ProductHandler{s}
 }
 
-func (h *ProductHandler) GetProductsHandler(c echo.Context) error {
+func (h *ProductHandler) GetProducts(c echo.Context) error {
 	logger := log.With().Str("function", "GetProductsHandler").Logger()
 
-	products, err := h.service.GetProductsService()
+	products, err := h.service.GetProducts()
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -31,7 +31,7 @@ func (h *ProductHandler) GetProductsHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get products success", products))
 }
 
-func (h *ProductHandler) GetProductByIdHandler(c echo.Context) error {
+func (h *ProductHandler) GetProductById(c echo.Context) error {
 	logger := log.With().Str("function", "GetProductByIdHandler").Logger()
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -42,7 +42,7 @@ func (h *ProductHandler) GetProductByIdHandler(c echo.Context) error {
 			Msg("Invalid product ID param")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Invalid product ID", nil))
 	}
-	result, err := h.service.GetProductByIdService(id)
+	result, err := h.service.GetProductById(id)
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -52,7 +52,7 @@ func (h *ProductHandler) GetProductByIdHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get product by id success", result))
 }
 
-func (h *ProductHandler) CreateProductHandler(c echo.Context) error {
+func (h *ProductHandler) CreateProduct(c echo.Context) error {
 	logger := log.With().Str("function", "CreateProductHandler").Logger()
 
 	product := Products{}
@@ -62,7 +62,7 @@ func (h *ProductHandler) CreateProductHandler(c echo.Context) error {
 			Msg("Failed to bind product")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Create product failed", nil))
 	}
-	if err := h.service.CreateProductService(product); err != nil {
+	if err := h.service.CreateProduct(product); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to create product")
@@ -71,7 +71,7 @@ func (h *ProductHandler) CreateProductHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Create product success", nil))
 }
 
-func (h *ProductHandler) UpdateProductHandler(c echo.Context) error {
+func (h *ProductHandler) UpdateProduct(c echo.Context) error {
 	logger := log.With().Str("function", "UpdateProductHandler").Logger()
 
 	product := Products{}
@@ -81,7 +81,7 @@ func (h *ProductHandler) UpdateProductHandler(c echo.Context) error {
 			Msg("Failed to bind product")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Update product failed", nil))
 	}
-	if err := h.service.UpdateProductService(product); err != nil {
+	if err := h.service.UpdateProduct(product); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to update product")
@@ -90,7 +90,7 @@ func (h *ProductHandler) UpdateProductHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Update product success", nil))
 }
 
-func (h *ProductHandler) DeleteProductHandler(c echo.Context) error {
+func (h *ProductHandler) DeleteProduct(c echo.Context) error {
 	logger := log.With().Str("function", "DeleteProductHandler").Logger()
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -102,7 +102,7 @@ func (h *ProductHandler) DeleteProductHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Invalid product ID", nil))
 	}
 
-	if err := h.service.DeleteProductService(id); err != nil {
+	if err := h.service.DeleteProduct(id); err != nil {
 		logger.Error().
 			Int("product_id", id).
 			Err(err).

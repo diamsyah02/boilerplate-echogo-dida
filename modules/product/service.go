@@ -1,11 +1,11 @@
 package product
 
 type ProductService interface {
-	GetProductsService() ([]Products, error)
-	GetProductByIdService(id int) ([]Products, error)
-	CreateProductService(product Products) error
-	UpdateProductService(product Products) error
-	DeleteProductService(id int) error
+	GetProducts() ([]Products, error)
+	GetProductById(id int) ([]Products, error)
+	CreateProduct(product Products) error
+	UpdateProduct(product Products) error
+	DeleteProduct(id int) error
 }
 
 type productService struct {
@@ -16,16 +16,16 @@ func NewProductService(repo ProductRepository) ProductService {
 	return &productService{repo}
 }
 
-func (s *productService) GetProductsService() ([]Products, error) {
-	result, err := s.repo.GetProductsRepository()
+func (s *productService) GetProducts() ([]Products, error) {
+	result, err := s.repo.GetProducts()
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (s *productService) GetProductByIdService(id int) ([]Products, error) {
-	result, found, err := s.repo.GetProductByIdRepository(id)
+func (s *productService) GetProductById(id int) ([]Products, error) {
+	result, found, err := s.repo.GetProductById(id)
 	if err != nil {
 		return []Products{}, err
 	}
@@ -35,24 +35,24 @@ func (s *productService) GetProductByIdService(id int) ([]Products, error) {
 	return []Products{result}, nil
 }
 
-func (s *productService) CreateProductService(product Products) error {
-	err := s.repo.CreateProductRepository(product)
+func (s *productService) CreateProduct(product Products) error {
+	err := s.repo.CreateProduct(product)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *productService) UpdateProductService(product Products) error {
-	err := s.repo.UpdateProductRepository(product)
+func (s *productService) UpdateProduct(product Products) error {
+	err := s.repo.UpdateProduct(product)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *productService) DeleteProductService(id int) error {
-	err := s.repo.DeleteProductRepository(id)
+func (s *productService) DeleteProduct(id int) error {
+	err := s.repo.DeleteProduct(id)
 	if err != nil {
 		return err
 	}

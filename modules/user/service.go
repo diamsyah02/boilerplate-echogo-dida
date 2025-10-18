@@ -1,8 +1,8 @@
 package user
 
 type UserService interface {
-	GetUsersService() ([]Users, error)
-	UpdateUserService(user Users) error
+	GetUsers() ([]Users, error)
+	UpdateUser(user Users) error
 }
 
 type userService struct {
@@ -13,16 +13,16 @@ func NewUserService(repo UserRepository) UserService {
 	return &userService{repo}
 }
 
-func (s *userService) GetUsersService() ([]Users, error) {
-	result, err := s.repo.GetUsersRepository()
+func (s *userService) GetUsers() ([]Users, error) {
+	result, err := s.repo.GetUsers()
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (s *userService) UpdateUserService(user Users) error {
-	err := s.repo.UpdateUserRepository(user)
+func (s *userService) UpdateUser(user Users) error {
+	err := s.repo.UpdateUser(user)
 	if err != nil {
 		return err
 	}

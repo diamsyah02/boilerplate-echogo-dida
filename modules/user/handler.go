@@ -16,10 +16,10 @@ func NewUserHandler(service UserService) UserHandler {
 	return UserHandler{service}
 }
 
-func (h *UserHandler) GetUsersHandler(c echo.Context) error {
+func (h *UserHandler) GetUsers(c echo.Context) error {
 	logger := log.With().Str("function", "GetUsersHandler").Logger()
 
-	users, err := h.service.GetUsersService()
+	users, err := h.service.GetUsers()
 	if err != nil {
 		logger.Error().
 			Err(err).
@@ -29,7 +29,7 @@ func (h *UserHandler) GetUsersHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.WebResponse(http.StatusOK, "Get users success", users))
 }
 
-func (h *UserHandler) UpdateUserHandler(c echo.Context) error {
+func (h *UserHandler) UpdateUser(c echo.Context) error {
 	logger := log.With().Str("function", "UpdateUserHandler").Logger()
 
 	user := Users{}
@@ -39,7 +39,7 @@ func (h *UserHandler) UpdateUserHandler(c echo.Context) error {
 			Msg("Failed to bind user")
 		return c.JSON(http.StatusBadRequest, utils.WebResponse(http.StatusBadRequest, "Update user failed", nil))
 	}
-	if err := h.service.UpdateUserService(user); err != nil {
+	if err := h.service.UpdateUser(user); err != nil {
 		logger.Error().
 			Err(err).
 			Msg("Failed to update user")

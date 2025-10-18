@@ -3,8 +3,8 @@ package user
 import "boilerplate-echogo-dida/configs"
 
 type UserRepository interface {
-	GetUsersRepository() ([]Users, error)
-	UpdateUserRepository(user Users) error
+	GetUsers() ([]Users, error)
+	UpdateUser(user Users) error
 }
 
 type userRepo struct{}
@@ -13,7 +13,7 @@ func NewUserRepository() UserRepository {
 	return &userRepo{}
 }
 
-func (s *userRepo) GetUsersRepository() ([]Users, error) {
+func (s *userRepo) GetUsers() ([]Users, error) {
 	var users []Users
 	if err := configs.DB.Find(&users).Error; err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (s *userRepo) GetUsersRepository() ([]Users, error) {
 	return users, nil
 }
 
-func (s *userRepo) UpdateUserRepository(user Users) error {
+func (s *userRepo) UpdateUser(user Users) error {
 	if err := configs.DB.Save(&user).Error; err != nil {
 		return err
 	}

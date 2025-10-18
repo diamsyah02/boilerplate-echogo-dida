@@ -12,32 +12,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockAuthService struct {
+type mockAuthRoute struct {
 	loginFunc    func(user auth.Users) (string, error)
 	registerFunc func(user auth.Users) error
 }
 
-func (m *mockAuthService) Login(user auth.Users) (string, error) {
+// Login implements auth service.
+func (m *mockAuthRoute) Login(user auth.Users) (string, error) {
 	return m.loginFunc(user)
 }
 
-func (m *mockAuthService) Register(user auth.Users) error {
+// Register implements auth service.
+func (m *mockAuthRoute) Register(user auth.Users) error {
 	return m.registerFunc(user)
 }
 
 func TestLoginRoute(t *testing.T) {
 	e := echo.New()
-
-	mockService := &mockAuthService{
+	mockRoute := &mockAuthRoute{
 		loginFunc: func(user auth.Users) (string, error) {
 			return "TOKEN_123", nil
 		},
-		registerFunc: func(user auth.Users) error {
-			return nil
-		},
 	}
-	mockHandler := auth.NewAuthHandler(mockService)
-
+	mockHandler := auth.NewAuthHandler(mockRoute)
 	api := e.Group("/api")
 	api.POST("/login", mockHandler.Login)
 
@@ -48,4 +45,26 @@ func TestLoginRoute(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Contains(t, rec.Body.String(), "TOKEN_123")
+}
+
+func TestRegisterRoute(t *testing.T) {
+	e := echo.New()
+
+	mockRoute := &mockAuthRoute{
+		registerFunc: func(user auth.Users) error {
+			return nil
+		},
+	}
+	mockHandler := auth.NewAuthHandler(mockRoute)
+
+	api := e.Group("/api")
+	api.POST("/register", mockHandler.Register)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/register", strings.NewReader(`{"username":"dida","password":"123"}`))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Contains(t, rec.Body.String(), "Register success")
 }

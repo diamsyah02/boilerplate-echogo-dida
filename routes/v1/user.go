@@ -12,7 +12,8 @@ func RouteUser(e *echo.Group) {
 	userService := user.NewUserService(userRepo)
 	userHandler := user.NewUserHandler(userService)
 
-	e.Use(configs.EchoJWTConfig)
-	e.GET("", userHandler.GetUsersHandler)
-	e.PUT("", userHandler.UpdateUserHandler)
+	u := e.Group("/users")
+	u.Use(configs.EchoJWTConfig)
+	u.GET("", userHandler.GetUsers)
+	u.PUT("", userHandler.UpdateUser)
 }
