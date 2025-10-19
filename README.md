@@ -7,19 +7,20 @@ Boilerplate Echo Golang
 - GORM
 - JWT
 - Zerolog
+- Assert
 
 # Build Linux
 ```bash
-GOOS=linux GOARCH=amd64 go build -o myapp main.go
+GOOS=linux GOARCH=amd64 go build -o app ./cmd/app/
 ```
 
 # Build Windows
 ```bash
-GOOS=windows GOARCH=amd64 go build -o myapp.exe main.go
+GOOS=windows GOARCH=amd64 go build -o app.exe ./cmd/app/
 ```
 
 # Run Auto Start
-- Buat file /etc/systemd/system/myapp.service
+- Buat file /etc/systemd/system/app.service
 ```bash
 [Unit]
 Description=Boilerplate Echo Golang
@@ -28,7 +29,7 @@ After=network.target
 [Service]
 User=boilerplate
 WorkingDirectory=/home/boilerplate/app
-ExecStart=/home/boilerplate/app/myapp
+ExecStart=/home/boilerplate/app/app
 Restart=always
 Environment=PORT=5000
 
@@ -48,10 +49,10 @@ sudo systemctl daemon-reexec
 
 - Start service
 ```bash
-sudo systemctl start myapp
+sudo systemctl start app
 ```
 
 - Enable service
 ```bash
-sudo systemctl enable --now myapp
+sudo systemctl enable --now app
 ```

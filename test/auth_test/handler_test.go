@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"boilerplate-echogo-dida/modules/auth"
+	"boilerplate-echogo-dida/internal/auth"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

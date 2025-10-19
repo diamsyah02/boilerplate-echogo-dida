@@ -1,7 +1,7 @@
 package user
 
 import (
-	"boilerplate-echogo-dida/utils"
+	"boilerplate-echogo-dida/pkg/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

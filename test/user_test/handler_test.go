@@ -1,7 +1,7 @@
 package user_test
 
 import (
-	"boilerplate-echogo-dida/modules/user"
+	"boilerplate-echogo-dida/internal/user"
 	"net/http"
 	"net/http/httptest"
 	"strings"

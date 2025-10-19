@@ -1,8 +1,8 @@
 package main
 
 import (
-	"boilerplate-echogo-dida/configs"
-	v1 "boilerplate-echogo-dida/routes/v1"
+	v1 "boilerplate-echogo-dida/api/v1"
+	"boilerplate-echogo-dida/pkg/configs"
 	"os"
 
 	"github.com/joho/godotenv"

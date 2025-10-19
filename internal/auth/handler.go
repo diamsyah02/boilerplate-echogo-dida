@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"boilerplate-echogo-dida/utils"
+	"boilerplate-echogo-dida/pkg/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"

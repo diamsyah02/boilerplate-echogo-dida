@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"boilerplate-echogo-dida/modules/auth"
+	"boilerplate-echogo-dida/internal/auth"
 
 	"github.com/labstack/echo/v4"
 )

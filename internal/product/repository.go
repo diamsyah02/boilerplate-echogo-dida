@@ -1,7 +1,7 @@
 package product
 
 import (
-	"boilerplate-echogo-dida/configs"
+	"boilerplate-echogo-dida/pkg/configs"
 	"errors"
 
 	"gorm.io/gorm"

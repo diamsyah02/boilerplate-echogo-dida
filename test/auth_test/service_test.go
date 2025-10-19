@@ -1,7 +1,7 @@
 package auth_test
 
 import (
-	"boilerplate-echogo-dida/modules/auth"
+	"boilerplate-echogo-dida/internal/auth"
 	"errors"
 	"testing"
 

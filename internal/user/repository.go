@@ -1,6 +1,6 @@
 package user
 
-import "boilerplate-echogo-dida/configs"
+import "boilerplate-echogo-dida/pkg/configs"
 
 type UserRepository interface {
 	GetUsers() ([]Users, error)

@@ -1,7 +1,7 @@
 package product_test
 
 import (
-	"boilerplate-echogo-dida/modules/product"
+	"boilerplate-echogo-dida/internal/product"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

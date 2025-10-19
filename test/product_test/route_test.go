@@ -1,7 +1,7 @@
 package product_test
 
 import (
-	"boilerplate-echogo-dida/modules/product"
+	"boilerplate-echogo-dida/internal/product"
 	"strings"
 
 	"net/http"

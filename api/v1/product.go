@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"boilerplate-echogo-dida/configs"
-	"boilerplate-echogo-dida/modules/product"
+	"boilerplate-echogo-dida/internal/product"
+	"boilerplate-echogo-dida/pkg/configs"
 
 	"github.com/labstack/echo/v4"
 )
