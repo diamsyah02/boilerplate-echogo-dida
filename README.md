@@ -8,9 +8,14 @@ Boilerplate Echo Golang
 - JWT
 - Zerolog
 
-# Build
+# Build Linux
 ```bash
 GOOS=linux GOARCH=amd64 go build -o myapp main.go
+```
+
+# Build Windows
+```bash
+GOOS=windows GOARCH=amd64 go build -o myapp.exe main.go
 ```
 
 # Run Auto Start
