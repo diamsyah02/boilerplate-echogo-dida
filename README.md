@@ -8,6 +8,9 @@ Boilerplate Echo Golang
 - JWT
 - Zerolog
 - Assert
+- Asynq
+- Go Mail
+- Asynqmon
 
 # Build Linux
 ```bash

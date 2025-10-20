@@ -19,6 +19,7 @@ func main() {
 			Err(err).
 			Msg("Gagal memuat file .env")
 	}
+
 	configs.Connect()
 	e := echo.New()
 	e.Use(middleware.Logger())

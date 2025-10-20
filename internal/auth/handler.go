@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"boilerplate-echogo-dida/pkg/tasks"
 	"boilerplate-echogo-dida/pkg/utils"
 
 	"github.com/labstack/echo/v4"
@@ -10,11 +11,15 @@ import (
 )
 
 type AuthHandler struct {
-	service AuthService
+	service     AuthService
+	distributor *tasks.TaskDistributor
 }
 
-func NewAuthHandler(s AuthService) AuthHandler {
-	return AuthHandler{s}
+func NewAuthHandler(s AuthService, d *tasks.TaskDistributor) AuthHandler {
+	return AuthHandler{
+		service:     s,
+		distributor: d,
+	}
 }
 
 func (h *AuthHandler) Login(c echo.Context) error {
@@ -71,6 +76,13 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		logger.Error().
 			Err(err).
 			Msg("Failed to register")
+		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Internal server error", nil))
+	}
+	err = h.distributor.DistributeEmail(req.Email, "Welcome to our app", "Thank you for registering")
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Msg("Failed to send email")
 		return c.JSON(http.StatusInternalServerError, utils.WebResponse(http.StatusInternalServerError, "Internal server error", nil))
 	}
 	data := map[string]interface{}{
