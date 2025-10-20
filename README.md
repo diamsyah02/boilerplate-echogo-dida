@@ -12,14 +12,24 @@ Boilerplate Echo Golang
 - Go Mail
 - Asynqmon
 
-# Build Linux
+# Build App in Linux
 ```bash
 GOOS=linux GOARCH=amd64 go build -o app ./cmd/app/
 ```
 
-# Build Windows
+# Build Worker in Linux
+```bash
+GOOS=linux GOARCH=amd64 go build -o worker ./cmd/worker/
+```
+
+# Build App in Windows
 ```bash
 GOOS=windows GOARCH=amd64 go build -o app.exe ./cmd/app/
+```
+
+# Build Worker in Windows
+```bash
+GOOS=windows GOARCH=amd64 go build -o worker.exe ./cmd/worker/
 ```
 
 # Run Auto Start
@@ -33,8 +43,12 @@ After=network.target
 User=boilerplate
 WorkingDirectory=/home/boilerplate/app
 ExecStart=/home/boilerplate/app/app
+EnvironmentFile=/home/boilerplate/app/.env
 Restart=always
+RestartSec=5
 Environment=PORT=5000
+StandardOutput=append:/home/boilerplate/app/logs/app.log
+StandardError=append:/home/boilerplate/app/logs/app.err.log
 
 [Install]
 WantedBy=multi-user.target
