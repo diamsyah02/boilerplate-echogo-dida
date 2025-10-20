@@ -3,19 +3,22 @@ package auth
 import (
 	"net/http"
 
-	"boilerplate-echogo-dida/pkg/tasks"
 	"boilerplate-echogo-dida/pkg/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 )
 
-type AuthHandler struct {
-	service     AuthService
-	distributor *tasks.TaskDistributor
+type TaskDistributorInterface interface {
+	DistributeEmail(to, subject, body string) error
 }
 
-func NewAuthHandler(s AuthService, d *tasks.TaskDistributor) AuthHandler {
+type AuthHandler struct {
+	service     AuthService
+	distributor TaskDistributorInterface
+}
+
+func NewAuthHandler(s AuthService, d TaskDistributorInterface) AuthHandler {
 	return AuthHandler{
 		service:     s,
 		distributor: d,

@@ -26,11 +26,16 @@ func (m *mockHandler) UpdateUser(user user.Users) error {
 	return m.updateUserFunc(user)
 }
 
-func TestGetUsersHandler(t *testing.T) {
+func setupContext(method, path, body string) (echo.Context, *httptest.ResponseRecorder) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/api/users", nil)
+	req := httptest.NewRequest(method, path, strings.NewReader(body))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	return e.NewContext(req, rec), rec
+}
+
+func TestGetUsersHandler(t *testing.T) {
+	c, rec := setupContext(http.MethodGet, "/api/users", "")
 
 	mock := &mockHandler{
 		getUsersFunc: func() ([]user.Users, error) {
@@ -45,11 +50,7 @@ func TestGetUsersHandler(t *testing.T) {
 }
 
 func TestUpdateUserHandler(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPut, "/api/users", strings.NewReader(`{"username":"dida","password":"123"}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodPut, "/api/users", `{"username":"dida","password":"123"}`)
 
 	mock := &mockHandler{
 		updateUserFunc: func(user user.Users) error {

@@ -44,11 +44,16 @@ func (m *mockHandler) DeleteProduct(id int) error {
 	return m.deleteProductFunc(id)
 }
 
-func TestGetProductsHandler(t *testing.T) {
+func setupContext(method, path, body string) (echo.Context, *httptest.ResponseRecorder) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/api/products", nil)
+	req := httptest.NewRequest(method, path, strings.NewReader(body))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	return e.NewContext(req, rec), rec
+}
+
+func TestGetProductsHandler(t *testing.T) {
+	c, rec := setupContext(http.MethodGet, "/api/products", "")
 
 	mock := &mockHandler{
 		getProductsFunc: func() ([]product.Products, error) {
@@ -63,10 +68,7 @@ func TestGetProductsHandler(t *testing.T) {
 }
 
 func TestGetProductByIdHandler(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/api/products/1", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodGet, "/api/products/1", "")
 	c.SetPath("/api/products/:id")
 	c.SetParamNames("id")
 	c.SetParamValues("1")
@@ -84,11 +86,7 @@ func TestGetProductByIdHandler(t *testing.T) {
 }
 
 func TestCreateProductHandler(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/api/products", strings.NewReader(`{"name":"dida","price":123, "stock":123}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodPost, "/api/products", `{"name":"dida","price":123, "stock":123}`)
 
 	mock := &mockHandler{
 		createProductFunc: func(product product.Products) error {
@@ -105,11 +103,7 @@ func TestCreateProductHandler(t *testing.T) {
 }
 
 func TestUpdateProductHandler(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPut, "/api/products", strings.NewReader(`{"id":1,"name":"dida","price":123, "stock":123}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodPut, "/api/products", `{"id":1,"name":"dida","price":123, "stock":123}`)
 
 	mock := &mockHandler{
 		updateProductFunc: func(product product.Products) error {
@@ -126,10 +120,7 @@ func TestUpdateProductHandler(t *testing.T) {
 }
 
 func TestDeleteProductHandler(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodDelete, "/api/products/1", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodDelete, "/api/products/1", "")
 	c.SetPath("/api/products/:id")
 	c.SetParamNames("id")
 	c.SetParamValues("1")

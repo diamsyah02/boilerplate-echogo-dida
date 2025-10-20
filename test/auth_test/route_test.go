@@ -27,6 +27,12 @@ func (m *mockAuthRoute) Register(user auth.Users) error {
 	return m.registerFunc(user)
 }
 
+type mockRouteDistributor struct{}
+
+func (m *mockRouteDistributor) DistributeEmail(to, subject, body string) error {
+	return nil
+}
+
 func TestLoginRoute(t *testing.T) {
 	e := echo.New()
 	mockRoute := &mockAuthRoute{
@@ -34,7 +40,8 @@ func TestLoginRoute(t *testing.T) {
 			return "TOKEN_123", nil
 		},
 	}
-	mockHandler := auth.NewAuthHandler(mockRoute)
+	mockDist := &mockRouteDistributor{}
+	mockHandler := auth.NewAuthHandler(mockRoute, mockDist)
 	api := e.Group("/api")
 	api.POST("/login", mockHandler.Login)
 
@@ -55,7 +62,8 @@ func TestRegisterRoute(t *testing.T) {
 			return nil
 		},
 	}
-	mockHandler := auth.NewAuthHandler(mockRoute)
+	mockDist := &mockRouteDistributor{}
+	mockHandler := auth.NewAuthHandler(mockRoute, mockDist)
 
 	api := e.Group("/api")
 	api.POST("/register", mockHandler.Register)

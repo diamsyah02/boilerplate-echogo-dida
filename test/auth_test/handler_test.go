@@ -1,6 +1,7 @@
 package auth_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,32 +13,48 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type mockHandler struct {
+type mockHandlerService struct {
 	loginFunc    func(user auth.Users) (string, error)
 	registerFunc func(user auth.Users) error
 }
 
-func (m *mockHandler) Login(user auth.Users) (string, error) {
+func (m *mockHandlerService) Login(user auth.Users) (string, error) {
 	return m.loginFunc(user)
 }
-func (m *mockHandler) Register(user auth.Users) error {
+func (m *mockHandlerService) Register(user auth.Users) error {
 	return m.registerFunc(user)
 }
 
-func TestLogin_Success(t *testing.T) {
+type mockDistributor struct {
+	distributeFunc func(to, subject, body string) error
+}
+
+func (m *mockDistributor) DistributeEmail(to, subject, body string) error {
+	if m.distributeFunc != nil {
+		return m.distributeFunc(to, subject, body)
+	}
+	return nil
+}
+
+func setupContext(method, path, body string) (echo.Context, *httptest.ResponseRecorder) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/login", strings.NewReader(`{"username":"dida","password":"123"}`))
+	req := httptest.NewRequest(method, path, strings.NewReader(body))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	return e.NewContext(req, rec), rec
+}
 
-	mock := &mockHandler{
+func TestLogin_Success(t *testing.T) {
+	c, rec := setupContext(http.MethodPost, "/login", `{"username":"dida","password":"123"}`)
+
+	mockSvc := &mockHandlerService{
 		loginFunc: func(user auth.Users) (string, error) {
 			return "TOKEN123", nil
 		},
 	}
+	mockDist := &mockDistributor{}
 
-	h := auth.NewAuthHandler(mock)
+	h := auth.NewAuthHandler(mockSvc, mockDist)
 	err := h.Login(c)
 
 	assert.NoError(t, err)
@@ -45,14 +62,13 @@ func TestLogin_Success(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), "TOKEN123")
 }
 
-func TestLoginHandler_EmptyFields(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/login", strings.NewReader(`{"username":"","password":""}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+func TestLogin_EmptyFields(t *testing.T) {
+	c, rec := setupContext(http.MethodPost, "/login", `{"username":"","password":""}`)
 
-	h := auth.NewAuthHandler(&mockHandler{})
+	mockSvc := &mockHandlerService{}
+	mockDist := &mockDistributor{}
+
+	h := auth.NewAuthHandler(mockSvc, mockDist)
 	err := h.Login(c)
 
 	assert.NoError(t, err)
@@ -61,19 +77,21 @@ func TestLoginHandler_EmptyFields(t *testing.T) {
 }
 
 func TestRegister_Success(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/register", strings.NewReader(`{"username":"dida","password":"123"}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodPost, "/register", `{"username":"dida","password":"123"}`)
 
-	mock := &mockHandler{
+	mockSvc := &mockHandlerService{
 		registerFunc: func(user auth.Users) error {
 			return nil
 		},
 	}
+	mockDist := &mockDistributor{
+		distributeFunc: func(to, subject, body string) error {
+			// Bisa tambahkan validasi jika perlu
+			return nil
+		},
+	}
 
-	h := auth.NewAuthHandler(mock)
+	h := auth.NewAuthHandler(mockSvc, mockDist)
 	err := h.Register(c)
 
 	assert.NoError(t, err)
@@ -82,16 +100,37 @@ func TestRegister_Success(t *testing.T) {
 }
 
 func TestRegister_EmptyFields(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/register", strings.NewReader(`{"username":"","password":""}`))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	c, rec := setupContext(http.MethodPost, "/register", `{"username":"","password":""}`)
 
-	h := auth.NewAuthHandler(&mockHandler{})
+	mockSvc := &mockHandlerService{}
+	mockDist := &mockDistributor{}
+
+	h := auth.NewAuthHandler(mockSvc, mockDist)
 	err := h.Register(c)
 
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, rec.Code)
 	assert.Contains(t, rec.Body.String(), "Username and password is required")
+}
+
+func TestRegister_EmailTaskFails(t *testing.T) {
+	c, rec := setupContext(http.MethodPost, "/register", `{"username":"dida","password":"123"}`)
+
+	mockSvc := &mockHandlerService{
+		registerFunc: func(user auth.Users) error {
+			return nil
+		},
+	}
+	mockDist := &mockDistributor{
+		distributeFunc: func(to, subject, body string) error {
+			return errors.New("failed to queue email task")
+		},
+	}
+
+	h := auth.NewAuthHandler(mockSvc, mockDist)
+	err := h.Register(c)
+
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), "Internal server error")
 }
