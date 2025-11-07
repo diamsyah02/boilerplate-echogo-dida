@@ -11,6 +11,7 @@ Boilerplate Echo Golang
 - Asynq
 - Go Mail
 - Asynqmon
+- Docker
 
 # Build App in Linux
 ```bash

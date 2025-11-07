@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # DB FOR ECHO GO
+  db:
+    image: mysql:8.0
+    container_name: echogo_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pw-echogo-db
+      MYSQL_DATABASE: belajar_echo
+    volumes:
+      - echogo_db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - echogo-net
+  
+  # ECHO GO API SERVICE
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: echogo_api
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_NAME: belajar_echo
+      DB_USER: root
+      DB_PASSWORD: pw-echogo-db
+      PORT: 5000
+    depends_on:
+      - db
+    networks:
+      - echogo-net
+
+  # NGINX FOR ECHO GO
+  nginx:
+    image: nginx:latest
+    container_name: nginx_echogo_proxy
+    restart: always
+    ports:
+      - "8081:80" # expose to different port on host
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - api
+    networks:
+      - echogo-net
+
+networks:
+  echogo-net:
+    driver: bridge
+
+volumes:
+  echogo_db_data:
